@@ -1,0 +1,4 @@
+Can have a function/class in another file
+just declare the prototype in the main file
+and pass the other file as a CMD argument to the compiler
+e.g. g++ Main.cpp Input.cpp -o Combined.exe
