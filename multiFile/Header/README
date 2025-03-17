@@ -1,8 +1,0 @@
-header files contain forward declarations (i.e. function prototypes)
-source files should contain their header files (e.g. subtract.h should be included in subtract.cpp)
-
-YOU MUST STILL INCLUDE OTHER .cpp FILES IN YOUR G++ CMD ARGS
-HEADERS JUST SAVE YOU FROM FORWARD DECLARING IN A FILE
-
-header gaurd is to ensure a defintion is included only once
-in a program
