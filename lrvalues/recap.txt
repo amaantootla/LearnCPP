@@ -1,0 +1,35 @@
+if a function argument expects a (const) reference, just pass in the varibale as it usually would be passed in
+if a funciton argument expects a (const) POINTER, pass in a valid pointer or the address of a object (thereby making it a pointer)
+do NOT use a const pointer, i.e. const T *ptr is okay but T const *ptr is not since thats so confusing
+“Pass by reference when you can, pass by address when you must”. references must have an address so the null case is eliminated
+
+if returning a (const) reference from a fucntion, make sure that object outlives its reference, or it becomes dangling and UB
+one mitigation for this is to return only static objects, or heap allocated objects (then you need a pointer). 
+not even a temporary value will hold
+
+const T& func()
+{
+    return T {};
+}
+is invalid
+
+the only time to return a reference is if one of the arguments you passed in are a reference,
+and you are returning that, since obviously that lifetime extends beyond the function call (the
+arguments existed before the call, and will exist after the call).
+
+T& func(T& x, T& y)
+{
+    if (x > y)
+    {
+        return y;
+    }
+    return x;
+}
+
+func(x, y) = 5;
+is valid it will set whatever variable is returned (remember we have the reference) to the new value of 5
+
+if function is returning a reference, use auto&, same with const, use const auto, or const auto&
+
+std::optional<T> return this or std::nullopt (to say no value could have been returned) 
+and then just check with if(val) where val is std:optional<T>
