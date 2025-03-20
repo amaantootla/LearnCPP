@@ -1,0 +1,4 @@
+make sure struct/class members are defined in decreasing size to minimize padding
+
+normal / reference use structVar.member
+pointer use structVar->member
