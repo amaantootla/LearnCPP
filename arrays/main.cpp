@@ -2,6 +2,9 @@
 #include <functional> // for ref wrapper
 #include <iostream>
 
+template <typename T, size_t R, size_t C>
+using Array2d = std::array<std::array<T, C>, R>; // yeah this sucks
+
 struct Item
 {
     int gold;
@@ -13,6 +16,41 @@ template <typename T, std::size_t N> void arrHelper(const std::array<T, N> &arr)
     // can take any length / type
     std::cout << std::get<0>(arr) << std::endl; // compile-time check of index, template parameters must be constexpr
     return;
+}
+
+void nowPtr(int *ptr, size_t size)
+{
+    // oh goodie, when we pass an array, it decays into an array
+    std::cout << sizeof(ptr) << std::endl;
+    size_t total{0};
+
+    // size info is lost, GULP
+    for (size_t i{0}; i < size; i++)
+    {
+        total += sizeof(*ptr);            // the element currently being pointed to
+        std::cout << ptr[i] << std::endl; // [] is shorthand for deref + offset at i times
+    }
+    std::cout << total << std::endl;
+}
+
+void print(const char *begin, const char *end)
+{
+    size_t i{0};
+    while (begin + i != end)
+    {
+        std::cout << *(begin + i) << std::endl;
+        i += 1;
+    }
+}
+
+void printReverse(const char *begin, const char *end)
+{
+    size_t i{1}; // since we start at one past the end
+    while (end - i != begin - 1) // and we are okay with the value at begin, since it is inclusive and valid
+    {
+        std::cout << *(end - i) << std::endl;
+        i += 1;
+    }
 }
 
 int main()
@@ -56,4 +94,50 @@ int main()
     std::cout << ptref.get() << std::endl;
     ptref = y; // this makes it point at y now
     std::cout << ptref.get() << std::endl;
+
+    [[maybe_unused]] int c[10]{}; // c-style array with 10 ints, contigious in memory, each offset by sizeof(int)
+    [[maybe_unused]] int first[5]{1, 2, 3, 4, 5}; // first 5 numbers
+    [[maybe_unused]] int yeah[]{1, 2, 3};         // yes you can omit the length
+    std::cout << sizeof(c) << std::endl;
+    std::cout << std::size(c) << std::endl; // the length
+
+    [[maybe_unused]] constexpr int a[3]{};
+
+    // arrays cannot point to a new set of data
+
+    nowPtr(c, std::size(c)); // prints 8, i thought we were size 40, well thats the size of the pointer, it points to
+                             // the first element
+
+    // math w pointers, address of next object, so in a array each 1...n - 1 will be size(T) apart, watch
+    const int *arrPtr{c};
+    for (size_t i{0}; i < 10; i++)
+    {
+        std::cout << arrPtr + i << std::endl; // and of course it is relative to where arrPtr was pointing to
+    }
+
+    const int *begin{c};
+    const int *end{c + std::size(c)}; // points to one past the end
+
+    for (; begin != end; begin++)
+    { // traverse whole array, incremenet to next object each time
+        const int tmp = *begin;
+        std::cout << tmp << std::endl;
+    }
+
+    const char hello[]{"Hello, world!"};
+    print(hello, hello + std::size(hello));
+    printReverse(hello, hello + std::size(hello));
+
+    Array2d<int, 2, 5> arrTwo {{
+        {1,2,3,4,5},
+        {5,4,3,2,1},
+    }}; // 5 cols, 2 rows, lord.
+
+    for (auto& r: arrTwo) {
+        for (auto& c: r){
+            std::cout << c;
+        }
+    }
+
+    
 }
